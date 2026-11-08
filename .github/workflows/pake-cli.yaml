@@ -58,6 +58,16 @@ on:
         required: false
         type: boolean
         default: false
+      show_system_tray:
+        description: "Show the app in the system tray"
+        required: false
+        type: boolean
+        default: false
+      hide_on_close:
+        description: "Hide the window to the tray instead of quitting on close"
+        required: false
+        type: boolean
+        default: false
       multi_arch:
         description: "Universal binary (macOS only)"
         required: false
@@ -113,6 +123,8 @@ jobs:
           INPUT_FULLSCREEN: ${{ inputs.fullscreen }}
           INPUT_HIDE_TITLE_BAR: ${{ inputs.hide_title_bar }}
           INPUT_NEW_WINDOW: ${{ inputs.new_window }}
+          INPUT_SHOW_SYSTEM_TRAY: ${{ inputs.show_system_tray }}
+          INPUT_HIDE_ON_CLOSE: ${{ inputs.hide_on_close }}
           INPUT_MULTI_ARCH: ${{ inputs.multi_arch }}
           INPUT_TARGETS: ${{ inputs.targets }}
         run: |
@@ -154,6 +166,14 @@ jobs:
             ARGS+=("--new-window")
           fi
 
+          if [ "$INPUT_SHOW_SYSTEM_TRAY" == "true" ]; then
+            ARGS+=("--show-system-tray")
+          fi
+
+          if [ "$INPUT_HIDE_ON_CLOSE" == "true" ]; then
+            ARGS+=("--hide-on-close")
+          fi
+
           if [ "$INPUT_MULTI_ARCH" == "true" ]; then
             ARGS+=("--multi-arch")
           fi
@@ -183,6 +203,8 @@ jobs:
           INPUT_FULLSCREEN: ${{ inputs.fullscreen }}
           INPUT_HIDE_TITLE_BAR: ${{ inputs.hide_title_bar }}
           INPUT_NEW_WINDOW: ${{ inputs.new_window }}
+          INPUT_SHOW_SYSTEM_TRAY: ${{ inputs.show_system_tray }}
+          INPUT_HIDE_ON_CLOSE: ${{ inputs.hide_on_close }}
           INPUT_MULTI_ARCH: ${{ inputs.multi_arch }}
           INPUT_TARGETS: ${{ inputs.targets }}
         run: |
@@ -223,6 +245,14 @@ jobs:
 
           if ($env:INPUT_NEW_WINDOW -eq "true") {
             $args += "--new-window"
+          }
+
+          if ($env:INPUT_SHOW_SYSTEM_TRAY -eq "true") {
+            $args += "--show-system-tray"
+          }
+
+          if ($env:INPUT_HIDE_ON_CLOSE -eq "true") {
+            $args += "--hide-on-close"
           }
 
           Write-Host "Running: node dist/cli.js $($args -join ' ')"
@@ -280,5 +310,5 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.name }}-Windows
-          path: ${{ inputs.name }}.msi
+          path: "*.msi"
           retention-days: 3
